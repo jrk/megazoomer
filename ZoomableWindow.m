@@ -10,19 +10,31 @@
 #import "ZoomableWindow.h"
 #import "ZoomedWindowDelegate.h"
 #import <Carbon/Carbon.h>
+#import <objc/objc-class.h>
 
 static NSMutableDictionary *bignesses = nil;
 static NSMutableDictionary *originalFrames = nil;
 static NSMutableDictionary *originalBackgroundMovabilities = nil;
 
-@implementation ZoomableWindow
+@interface NSWindow(ZoomableWindowSwizzle)
+- (NSRect)__appkit_constrainFrameRect:(NSRect)r toScreen:(NSScreen *)s;
+- (BOOL)__appkit_isZoomable;
+- (BOOL)__appkit_isResizable;
+- (BOOL)__appkit_isMiniaturizable;
+- (BOOL)__appkit_validateMenuItem:(NSMenuItem *)item;
+- (void)__appkit_zoom:sender;
+- (void)__appkit_performZoom:sender;
+- (void)__appkit_toggleToolbarShown:sender;
+@end
 
-- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen *)screen
+@implementation NSWindow(ZoomableWindow)
+
+- (NSRect)__megazoomer_constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen *)screen
 {
 	if ([self isBig]) {
-		return frameRect;
+		return [self megaZoomedFrame];
 	} else {
-		return [super constrainFrameRect:frameRect toScreen:screen];
+		return [self __appkit_constrainFrameRect:frameRect toScreen:screen];
 	}
 }
 
@@ -46,59 +58,59 @@ static NSMutableDictionary *originalBackgroundMovabilities = nil;
     [self setShowsResizeIndicator:YES];
     [self setFrame:originalFrame display:YES animate:YES];
     [self setMovableByWindowBackground:[[originalBackgroundMovabilities objectForKey:[NSNumber numberWithInt:[self windowNumber]]] boolValue]];
-    if (![ZoomableWindow anyBig]) {
+    if (![NSWindow anyBig]) {
         SetSystemUIMode(kUIModeNormal, 0);
     }
 }
 
-- (void)toggleToolbarShown:sender
+- (void)__megazoomer_toggleToolbarShown:sender
 {
     if (![self isBig]) {
-        [super toggleToolbarShown:sender];
+        [self __appkit_toggleToolbarShown:sender];
     }
 }
 
-- (BOOL)validateMenuItem:(NSMenuItem *)item
+- (BOOL)__megazoomer_validateMenuItem:(NSMenuItem *)item
 {
     if ([self isBig] && ([item action] == @selector(toggleToolbarShown:) || [item action] == @selector(performZoom:) )) {
         return NO;
     }
-    if ([super respondsToSelector:@selector(validateMenuItem:)]) {
-        return [super validateMenuItem:item];
+    if ([self respondsToSelector:@selector(__appkit_validateMenuItem:)]) {
+        return [self __appkit_validateMenuItem:item];
     }
     return YES;
 }
 
 #define NOT_WHEN_BIG(method) \
-- (BOOL)method \
+- (BOOL)__megazoomer_ ## method \
 { \
     if ([self isBig]) { \
         return NO; \
     } \
-    return [super method]; \
+    return [self __appkit_ ## method]; \
 }
 
 NOT_WHEN_BIG(isResizable)
 NOT_WHEN_BIG(isMiniaturizable)
 NOT_WHEN_BIG(isZoomable)
 
-- (void)zoom:sender
+- (void)__megazoomer_zoom:sender
 {
     if (![self isBig]) {
-        [super zoom:sender];
+        [self __appkit_zoom:sender];
     }
 }
 
-- (void)performZoom:sender
+- (void)__megazoomer_performZoom:sender
 {
     if (![self isBig]) {
-        [super performZoom:sender];
+        [self __appkit_performZoom:sender];
     }
 }
 
 - (BOOL)isMegaZoomable
 {
-    return [super isZoomable] || ([MegaZoomer zoomMenuItem] != nil && [self validateMenuItem:[MegaZoomer zoomMenuItem]]);
+    return [self __appkit_isZoomable] || ([MegaZoomer zoomMenuItem] != nil && [self validateMenuItem:[MegaZoomer zoomMenuItem]]);
 }
 
 - (NSRect)megaZoomedFrame
@@ -112,7 +124,7 @@ NOT_WHEN_BIG(isZoomable)
     if (![self isMegaZoomable]) {
         return;
     }
-    if (![ZoomableWindow anyBig]) {
+    if (![NSWindow anyBig]) {
         SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
     }
 	if (!originalFrames) {
@@ -158,6 +170,41 @@ NOT_WHEN_BIG(isZoomable)
         }
     }
     return NO;
+}
+
++ (void)swizzle:(struct objc_method *)custom
+{
+    SEL custom_sel = custom->method_name;
+    NSString *name = NSStringFromSelector(custom_sel);
+    // __megazoomer_ <- 13 characters
+    name = [name substringFromIndex:13];
+    SEL old_sel = NSSelectorFromString(name);
+    SEL new_sel = NSSelectorFromString([NSString stringWithFormat:@"__appkit_%@", name]);
+    
+    struct objc_method *old = class_getInstanceMethod([self class], old_sel);
+    
+    if (old == NULL) {
+        return;
+    }
+    
+    custom->method_name = old_sel;
+    old->method_name = new_sel;
+}
+
++ (void)swizzleZoomerMethods
+{
+    void *iter = 0;
+    struct objc_method_list *mlist;
+    while (mlist = class_nextMethodList([self class], &iter)) {
+        int i;
+        for (i=0; i<mlist->method_count; i++) {
+            struct objc_method *m = mlist->method_list + i;
+            NSString *name = NSStringFromSelector(m->method_name);
+            if ([name hasPrefix:@"__megazoomer_"]) {
+                [self swizzle:m];
+            }
+        }
+    }
 }
 
 @end

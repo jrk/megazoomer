@@ -31,7 +31,7 @@
     if ([realDelegate respondsToSelector:@selector(windowWillClose:)]) {
         [realDelegate windowWillClose:aNotification];
     }
-    ZoomableWindow *window = [aNotification object];
+    NSWindow *window = [aNotification object];
     [window returnToOriginal];
     // "self" is dead at this point, so don't add anything here
 }

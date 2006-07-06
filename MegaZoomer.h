@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class ZoomableWindow;
 
 @interface MegaZoomer : NSObject {
 }

@@ -64,10 +64,7 @@
 {
     static NSSet *doesntWork = nil;
     if (doesntWork == nil) {
-        doesntWork = [[NSSet alloc] initWithObjects:
-            @"com.iwascoding.garagesale",
-            @"com.insidersoftware.fontagentpro.fontmanager",
-            nil];
+        doesntWork = [[NSSet alloc] init]; // add bundles that don't work
     }
     return ![doesntWork containsObject:[[NSBundle mainBundle] bundleIdentifier]];
 }
@@ -79,28 +76,19 @@
 		zoomer = [[self alloc] init];
         if ([self megazoomerWorksHere]) {
             [zoomer insertMenu];
-            [ZoomableWindow poseAsClass:[NSWindow class]];
+            [NSWindow swizzleZoomerMethods];
         }
 	}
 }
 
-- (void)muckWithIsa:win
-{
-    if ([[win className] isEqualToString:@"%NSWindow"]) {
-        win->isa = [ZoomableWindow class]; // muahahahaha
-    }
-}
-
 - (BOOL)validateMenuItem:(id <NSMenuItem>)item
 {
-    [self muckWithIsa:[NSApp keyWindow]];
-    return [(ZoomableWindow *)[NSApp keyWindow] isMegaZoomable];
+    return [[NSApp keyWindow] isMegaZoomable];
 }
 
 - (void)megaZoom:sender
 {
-    [self muckWithIsa:[NSApp keyWindow]];
-    [(ZoomableWindow *)[NSApp keyWindow] toggleMegaZoom];
+    [[NSApp keyWindow] toggleMegaZoom];
 }
 
 @end

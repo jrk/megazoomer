@@ -9,9 +9,9 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface ZoomableWindow : NSWindow {
+@interface NSWindow(ZoomableWindow)
 
-}
++ (void)swizzleZoomerMethods;
 
 + (BOOL)anyBig;
 
