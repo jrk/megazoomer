@@ -16,9 +16,16 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>0.4</string>
-	<key>SIMBLApplicationIdentifier</key>
+    <key>SIMBLTargetApplications</key>
 	<array>
-		<string>*</string>
+		<dict>
+			<key>BundleIdentifier</key>
+			<string>*</string>
+			<key>MaxBundleVersion</key>
+			<string>*</string>
+			<key>MinBundleVersion</key>
+			<string>*</string>
+		</dict>
 	</array>
 </dict>
 </plist>
