@@ -8,9 +8,12 @@
 
 #import "MegaZoomer.h"
 #import "ZoomableWindow.h"
-#import "ZoomedWindowDelegate.h"
 #import <Carbon/Carbon.h>
 #import <objc/objc-class.h>
+
+#define NOT_BIG 0
+#define GETTING_BIG 1
+#define TOTALLY_BIG 2
 
 static NSMutableDictionary *bignesses = nil;
 static NSMutableDictionary *originalFrames = nil;
@@ -25,36 +28,48 @@ static NSMutableDictionary *originalBackgroundMovabilities = nil;
 - (void)__appkit_zoom:sender;
 - (void)__appkit_performZoom:sender;
 - (void)__appkit_toggleToolbarShown:sender;
+- (void)__appkit_setFrame:(NSRect)windowFrame display:(BOOL)displayViews;
+- (void)__appkit_close;
 @end
 
 @implementation NSWindow(ZoomableWindow)
 
+- (void)__megazoomer_close
+{
+    if ([self isBig]) {
+        [self returnToOriginal];
+    }
+    [self __appkit_close];
+}
+
+- (void)__megazoomer_setFrame:(NSRect)windowFrame display:(BOOL)displayViews
+{
+	if (![self isBig]) {
+		[self __appkit_setFrame:windowFrame display:displayViews];
+	}
+}
+
 - (NSRect)__megazoomer_constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen *)screen
 {
-	if ([self isBig]) {
+	if ([self isBig] || [self isGettingBig]) {
 		return [self megaZoomedFrame];
 	} else {
 		return [self __appkit_constrainFrameRect:frameRect toScreen:screen];
 	}
 }
 
-- (void)setBig:(BOOL)big
+- (void)setBig:(int)big
 {
 	if (!bignesses) {
 		bignesses = [[NSMutableDictionary alloc] init];
 	}
-	[bignesses setObject:[NSNumber numberWithBool:big] forKey:[NSNumber numberWithInt:[self windowNumber]]];
+	[bignesses setObject:[NSNumber numberWithInt:big] forKey:[NSNumber numberWithInt:[self windowNumber]]];
 }
 
 - (void)returnToOriginal
 {
 	NSRect originalFrame = [[originalFrames objectForKey:[NSNumber numberWithInt:[self windowNumber]]] rectValue];
-    id fakeDelegate = [self delegate];
-    if ([fakeDelegate respondsToSelector:@selector(realDelegate)]) {
-        [self setDelegate:[fakeDelegate realDelegate]];
-        [fakeDelegate release];
-    }
-    [self setBig:NO];
+    [self setBig:NOT_BIG];
     [self setShowsResizeIndicator:YES];
     [self setFrame:originalFrame display:YES animate:YES];
     [self setMovableByWindowBackground:[[originalBackgroundMovabilities objectForKey:[NSNumber numberWithInt:[self windowNumber]]] boolValue]];
@@ -137,13 +152,11 @@ NOT_WHEN_BIG(isZoomable)
     }
 	[originalBackgroundMovabilities setObject:[NSNumber numberWithBool:[self isMovableByWindowBackground]] forKey:[NSNumber numberWithInt:[self windowNumber]]];
     
-    [self setBig:YES];
+    [self setBig:GETTING_BIG];
     [self setShowsResizeIndicator:NO];
     [self setFrame:[self megaZoomedFrame] display:YES animate:YES];
     [self setMovableByWindowBackground:NO];
-    
-    id realDelegate = [self delegate];
-    [self setDelegate:[[ZoomedWindowDelegate alloc] initWithRealDelegate:realDelegate]];
+    [self setBig:TOTALLY_BIG];
 }
 
 - (void)toggleMegaZoom
@@ -157,7 +170,11 @@ NOT_WHEN_BIG(isZoomable)
 
 - (BOOL)isBig
 {
-	return [[bignesses objectForKey:[NSNumber numberWithInt:[self windowNumber]]] boolValue];
+	return [[bignesses objectForKey:[NSNumber numberWithInt:[self windowNumber]]] intValue] == TOTALLY_BIG;
+}
+- (BOOL)isGettingBig
+{
+	return [[bignesses objectForKey:[NSNumber numberWithInt:[self windowNumber]]] intValue] == GETTING_BIG;
 }
 
 + (BOOL)anyBig

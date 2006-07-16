@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
-		BF0FDD1D09D4DF6E004C9060 /* ZoomedWindowDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF0FDD1C09D4DF6E004C9060 /* ZoomedWindowDelegate.m */; };
 		BFED0C9A08E0DBA80038121C /* MegaZoomer.m in Sources */ = {isa = PBXBuildFile; fileRef = BFED0C9908E0DBA80038121C /* MegaZoomer.m */; };
 		BFED0CF208E0E9C70038121C /* ZoomableWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BFED0CF108E0E9C70038121C /* ZoomableWindow.m */; };
 		BFF5568B09D4D49100CC32BF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFF5568A09D4D49100CC32BF /* Carbon.framework */; };
@@ -47,8 +46,6 @@
 		32DBCF630370AF2F00C91783 /* megazoomer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = megazoomer_Prefix.pch; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* megazoomer.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = megazoomer.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
-		BF0FDD1B09D4DF6E004C9060 /* ZoomedWindowDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomedWindowDelegate.h; sourceTree = "<group>"; };
-		BF0FDD1C09D4DF6E004C9060 /* ZoomedWindowDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomedWindowDelegate.m; sourceTree = "<group>"; };
 		BFED0C9808E0DBA80038121C /* MegaZoomer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MegaZoomer.h; sourceTree = "<group>"; };
 		BFED0C9908E0DBA80038121C /* MegaZoomer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = MegaZoomer.m; sourceTree = "<group>"; };
 		BFED0CF008E0E9C70038121C /* ZoomableWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomableWindow.h; sourceTree = "<group>"; };
@@ -108,8 +105,6 @@
 				BFED0C9908E0DBA80038121C /* MegaZoomer.m */,
 				BFED0CF008E0E9C70038121C /* ZoomableWindow.h */,
 				BFED0CF108E0E9C70038121C /* ZoomableWindow.m */,
-				BF0FDD1B09D4DF6E004C9060 /* ZoomedWindowDelegate.h */,
-				BF0FDD1C09D4DF6E004C9060 /* ZoomedWindowDelegate.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -221,7 +216,6 @@
 			files = (
 				BFED0C9A08E0DBA80038121C /* MegaZoomer.m in Sources */,
 				BFED0CF208E0E9C70038121C /* ZoomableWindow.m in Sources */,
-				BF0FDD1D09D4DF6E004C9060 /* ZoomedWindowDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,7 @@
 - (BOOL)isMegaZoomable;
 
 - (BOOL)isBig;
+- (BOOL)isGettingBig;
 
 - (void)megaZoom;
 - (void)returnToOriginal;
