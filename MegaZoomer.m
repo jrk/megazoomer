@@ -19,9 +19,9 @@
 
 + (NSMenu *)windowMenu
 {
-	NSMenu *mainMenu = [NSApp mainMenu];
+    NSMenu *mainMenu = [NSApp mainMenu];
     NSEnumerator *menuEnumerator = [[mainMenu itemArray] objectEnumerator];
-	NSMenu *windowMenu;
+    NSMenu *windowMenu;
     while ((windowMenu = [[menuEnumerator nextObject] submenu]) != nil) {
         // Let's hope Apple doesn't change this...
         if ([[windowMenu _menuName] isEqualToString:@"NSWindowsMenu"]) {
@@ -33,7 +33,7 @@
 
 + (NSMenuItem *)zoomMenuItem
 {
-	NSMenu *windowMenu = [self windowMenu];
+    NSMenu *windowMenu = [self windowMenu];
     
     int zoomItemIndex = [windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)];
     NSMenuItem *zoomMenuItem = nil;
@@ -48,16 +48,17 @@
 
 - (void)insertMenu
 {
-	NSMenu *windowMenu = [[self class] windowMenu];
-
-	NSMenuItem *item = [[[NSMenuItem alloc] init] autorelease];
+    NSLog(@"hello world");
+    NSMenu *windowMenu = [[self class] windowMenu];
+    
+    NSMenuItem *item = [[[NSMenuItem alloc] init] autorelease];
     [item setRepresentedObject:self]; // So I can validate it without having to check the title.
-	[item setTitle:@"Mega Zoom"];
-	[item setAction:@selector(megaZoom:)];
-	[item setTarget:self];
-	[item setKeyEquivalent:@"\n"];
-	[item setKeyEquivalentModifierMask:NSCommandKeyMask];
-	[windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
+    [item setTitle:@"Mega Zoom"];
+    [item setAction:@selector(megaZoom:)];
+    [item setTarget:self];
+    [item setKeyEquivalent:@"\n"];
+    [item setKeyEquivalentModifierMask:NSCommandKeyMask];
+    [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
 }
 
 + (BOOL)megazoomerWorksHere
@@ -71,14 +72,15 @@
 
 + (void)load
 {
-	static MegaZoomer *zoomer = nil;
-	if (zoomer == nil) {
-		zoomer = [[self alloc] init];
+    NSLog(@"hi");
+    static MegaZoomer *zoomer = nil;
+    if (zoomer == nil) {
+        zoomer = [[self alloc] init];
         if ([self megazoomerWorksHere]) {
             [zoomer insertMenu];
             [NSWindow swizzleZoomerMethods];
         }
-	}
+    }
 }
 
 - (BOOL)validateMenuItem:(id <NSMenuItem>)item

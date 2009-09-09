@@ -9,7 +9,8 @@
 #import "MegaZoomer.h"
 #import "ZoomableWindow.h"
 #import <Carbon/Carbon.h>
-#import <objc/objc-class.h>
+#import <objc/runtime.h>
+#import <objc/message.h>
 
 #define NOT_BIG 0
 #define GETTING_BIG 1
@@ -189,6 +190,45 @@ NOT_WHEN_BIG(isZoomable)
     return NO;
 }
 
+#if __LP64__
+
++ (void)swizzle:(Method)custom
+{
+    SEL custom_sel = method_getName(custom);
+    NSString *name = NSStringFromSelector(custom_sel);
+    // __megazoomer_ <- 13 characters
+    name = [name substringFromIndex:13];
+    SEL old_sel = NSSelectorFromString(name);
+    SEL new_sel = NSSelectorFromString([NSString stringWithFormat:@"__appkit_%@", name]);
+    
+    Method old = class_getInstanceMethod([self class], old_sel);
+    
+    if (old == NULL) {
+        return;
+    }
+    
+    class_addMethod([self class], new_sel, method_getImplementation(old), method_getTypeEncoding(old));
+    method_exchangeImplementations(custom, old);
+}
+
++ (void)swizzleZoomerMethods
+{
+    unsigned int count;
+    Method *methods = class_copyMethodList([self class], &count);
+    
+    int i;
+    for (i = 0; i < count; i++) {
+        NSString *name = NSStringFromSelector(method_getName(methods[i]));
+        if ([name hasPrefix:@"__megazoomer_"]) {
+            [self swizzle:methods[i]];
+        }
+    }
+    
+    free(methods);
+}
+
+#else
+
 + (void)swizzle:(struct objc_method *)custom
 {
     SEL custom_sel = custom->method_name;
@@ -223,5 +263,7 @@ NOT_WHEN_BIG(isZoomable)
         }
     }
 }
+
+#endif
 
 @end
