@@ -48,7 +48,6 @@
 
 - (void)insertMenu
 {
-    NSLog(@"hello world");
     NSMenu *windowMenu = [[self class] windowMenu];
     
     NSMenuItem *item = [[[NSMenuItem alloc] init] autorelease];
@@ -72,7 +71,6 @@
 
 + (void)load
 {
-    NSLog(@"hi");
     static MegaZoomer *zoomer = nil;
     if (zoomer == nil) {
         zoomer = [[self alloc] init];
