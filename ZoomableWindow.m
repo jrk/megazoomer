@@ -131,7 +131,10 @@ NOT_WHEN_BIG(isZoomable)
 
 - (NSRect)megaZoomedFrame
 {
+    NSRect oldContentRect = [self frame];
     NSRect newContentRect = [[self screen] frame];
+    newContentRect.origin.x = oldContentRect.origin.x;
+    newContentRect.size.width = oldContentRect.size.width;
     return [NSWindow frameRectForContentRect:newContentRect styleMask:[self styleMask]];
 }
 
