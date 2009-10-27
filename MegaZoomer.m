@@ -52,11 +52,34 @@
     
     NSMenuItem *item = [[[NSMenuItem alloc] init] autorelease];
     [item setRepresentedObject:self]; // So I can validate it without having to check the title.
-    [item setTitle:@"Mega Zoom"];
-    [item setAction:@selector(megaZoom:)];
+    [item setTitle:@"Mega Zoom: Vertical"];
+    [item setAction:@selector(megaZoomVertical:)];
     [item setTarget:self];
     [item setKeyEquivalent:@"\n"];
     [item setKeyEquivalentModifierMask:NSCommandKeyMask];
+    [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
+    
+    item = [[[NSMenuItem alloc] init] autorelease];
+    [item setRepresentedObject:self]; // So I can validate it without having to check the title.
+    [item setTitle:@"Mega Zoom: Right Half"];
+    [item setAction:@selector(megaZoomRightHalf:)];
+    [item setTarget:self];
+    [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
+    
+    item = [[[NSMenuItem alloc] init] autorelease];
+    [item setRepresentedObject:self]; // So I can validate it without having to check the title.
+    [item setTitle:@"Mega Zoom: Left Half"];
+    [item setAction:@selector(megaZoomLeftHalf:)];
+    [item setTarget:self];
+    [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
+    
+    item = [[[NSMenuItem alloc] init] autorelease];
+    [item setRepresentedObject:self]; // So I can validate it without having to check the title.
+    [item setTitle:@"Mega Zoom: Full"];
+    [item setAction:@selector(megaZoomFull:)];
+    [item setTarget:self];
+    [item setKeyEquivalent:@"\n"];
+    [item setKeyEquivalentModifierMask:NSCommandKeyMask|NSShiftKeyMask];
     [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
 }
 
@@ -86,9 +109,24 @@
     return [[NSApp keyWindow] isMegaZoomable];
 }
 
-- (void)megaZoom:sender
+- (void)megaZoomLeftHalf:sender
 {
-    [[NSApp keyWindow] toggleMegaZoom];
+    [[NSApp keyWindow] toggleMegaZoomLeftHalf];
+}
+
+- (void)megaZoomRightHalf:sender
+{
+    [[NSApp keyWindow] toggleMegaZoomRightHalf];
+}
+
+- (void)megaZoomVertical:sender
+{
+    [[NSApp keyWindow] toggleMegaZoomVertical];
+}
+
+- (void)megaZoomFull:sender
+{
+    [[NSApp keyWindow] toggleMegaZoomFull];
 }
 
 @end

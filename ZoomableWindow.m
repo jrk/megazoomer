@@ -16,7 +16,19 @@
 #define GETTING_BIG 1
 #define TOTALLY_BIG 2
 
+typedef enum {
+    MegaZoomNone = NOT_BIG,
+    
+    MegaZoomFullScreen,
+    MegaZoomVertical,
+    MegaZoomLeftHalf,
+    MegaZoomRightHalf,
+    
+    MegaZoomModeMax
+} MegaZoomMode;
+
 static NSMutableDictionary *bignesses = nil;
+static NSMutableDictionary *modes = nil;
 static NSMutableDictionary *originalFrames = nil;
 static NSMutableDictionary *originalBackgroundMovabilities = nil;
 
@@ -34,6 +46,40 @@ static NSMutableDictionary *originalBackgroundMovabilities = nil;
 @end
 
 @implementation NSWindow(ZoomableWindow)
+
+- (NSRect)megaZoomedFrame:(MegaZoomMode)mode
+{
+    NSRect oldContentRect = [self frame];
+    NSRect screenRect = [[self screen] frame];
+    NSRect newContentRect;
+    
+    assert(mode < MegaZoomModeMax);
+    
+    if (mode == MegaZoomFullScreen) {
+        newContentRect = screenRect;
+    } else if (mode == MegaZoomVertical || mode == MegaZoomLeftHalf || mode == MegaZoomRightHalf) {
+        newContentRect.origin.y     = screenRect.origin.y;
+        newContentRect.size.height  = screenRect.size.height;
+        if (mode == MegaZoomVertical) {
+            newContentRect.origin.x     = oldContentRect.origin.x;
+            newContentRect.size.width   = oldContentRect.size.width;
+        } else {
+            newContentRect.size.width   = screenRect.size.width/2;
+            if (mode == MegaZoomLeftHalf) {
+                newContentRect.origin.x = 0;
+            } else {
+                newContentRect.origin.x = screenRect.size.width - newContentRect.size.width;
+            }
+        }
+    }
+    
+    return [NSWindow frameRectForContentRect:newContentRect styleMask:[self styleMask]];
+}
+
+- (MegaZoomMode)mode
+{
+	return (MegaZoomMode)[[modes objectForKey:[NSNumber numberWithInt:[self windowNumber]]] intValue];
+}
 
 - (void)__megazoomer_close
 {
@@ -53,7 +99,7 @@ static NSMutableDictionary *originalBackgroundMovabilities = nil;
 - (NSRect)__megazoomer_constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen *)screen
 {
 	if ([self isBig] || [self isGettingBig]) {
-		return [self megaZoomedFrame];
+		return [self megaZoomedFrame:[self mode]]; // TODO: fix this to read mode dict
 	} else {
 		return [self __appkit_constrainFrameRect:frameRect toScreen:screen];
 	}
@@ -67,10 +113,19 @@ static NSMutableDictionary *originalBackgroundMovabilities = nil;
 	[bignesses setObject:[NSNumber numberWithInt:big] forKey:[NSNumber numberWithInt:[self windowNumber]]];
 }
 
+- (void)setMode:(MegaZoomMode)mode
+{
+	if (!modes) {
+		modes = [[NSMutableDictionary alloc] init];
+	}
+	[modes setObject:[NSNumber numberWithInt:mode] forKey:[NSNumber numberWithInt:[self windowNumber]]];
+}
+
 - (void)returnToOriginal
 {
 	NSRect originalFrame = [[originalFrames objectForKey:[NSNumber numberWithInt:[self windowNumber]]] rectValue];
     [self setBig:NOT_BIG];
+    [self setMode:MegaZoomNone];
     [self setShowsResizeIndicator:YES];
     [self setFrame:originalFrame display:YES animate:YES];
     [self setMovableByWindowBackground:[[originalBackgroundMovabilities objectForKey:[NSNumber numberWithInt:[self windowNumber]]] boolValue]];
@@ -129,16 +184,7 @@ NOT_WHEN_BIG(isZoomable)
     return [self __appkit_isZoomable] || ([MegaZoomer zoomMenuItem] != nil && [self validateMenuItem:[MegaZoomer zoomMenuItem]]);
 }
 
-- (NSRect)megaZoomedFrame
-{
-    NSRect oldContentRect = [self frame];
-    NSRect newContentRect = [[self screen] frame];
-    newContentRect.origin.x = oldContentRect.origin.x;
-    newContentRect.size.width = oldContentRect.size.width;
-    return [NSWindow frameRectForContentRect:newContentRect styleMask:[self styleMask]];
-}
-
-- (void)megaZoom
+- (void)megaZoom:(MegaZoomMode)mode
 {
     if (![self isMegaZoomable]) {
         return;
@@ -157,18 +203,40 @@ NOT_WHEN_BIG(isZoomable)
 	[originalBackgroundMovabilities setObject:[NSNumber numberWithBool:[self isMovableByWindowBackground]] forKey:[NSNumber numberWithInt:[self windowNumber]]];
     
     [self setBig:GETTING_BIG];
+    [self setMode:mode];
     [self setShowsResizeIndicator:NO];
-    [self setFrame:[self megaZoomedFrame] display:YES animate:YES];
+    [self setFrame:[self megaZoomedFrame:mode] display:YES animate:YES];
     [self setMovableByWindowBackground:NO];
     [self setBig:TOTALLY_BIG];
 }
 
-- (void)toggleMegaZoom
+- (void)toggleMegaZoomFull
 {
+    [self toggleMegaZoom:MegaZoomFullScreen];
+}
+
+- (void)toggleMegaZoomVertical
+{
+    [self toggleMegaZoom:MegaZoomVertical];
+}
+
+- (void)toggleMegaZoomLeftHalf
+{
+    [self toggleMegaZoom:MegaZoomLeftHalf];
+}
+
+- (void)toggleMegaZoomRightHalf
+{
+    [self toggleMegaZoom:MegaZoomRightHalf];
+}
+
+- (void)toggleMegaZoom:(MegaZoomMode)mode
+{
+    // TODO: slightly awkward metaphor for now where ALL megazoom operations undo if ANY are set (there is just one "big" bit), rather than switching modes directly from one zoom to another
     if ([self isBig]) {
         [self returnToOriginal];
     } else {
-        [self megaZoom];
+        [self megaZoom:mode];
     }
 }
 
@@ -192,6 +260,7 @@ NOT_WHEN_BIG(isZoomable)
     }
     return NO;
 }
+
 
 #if __LP64__
 

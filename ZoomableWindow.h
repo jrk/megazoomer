@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-
 @interface NSWindow(ZoomableWindow)
 
 + (void)swizzleZoomerMethods;
@@ -20,11 +19,11 @@
 - (BOOL)isBig;
 - (BOOL)isGettingBig;
 
-- (void)megaZoom;
 - (void)returnToOriginal;
 
-- (void)toggleMegaZoom;
-
-- (NSRect)megaZoomedFrame;
+- (void)toggleMegaZoomFull;
+- (void)toggleMegaZoomVertical;
+- (void)toggleMegaZoomLeftHalf;
+- (void)toggleMegaZoomRightHalf;
 
 @end
