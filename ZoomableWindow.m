@@ -252,7 +252,7 @@ NOT_WHEN_BIG(isZoomable)
 {
     void *iter = 0;
     struct objc_method_list *mlist;
-    while (mlist = class_nextMethodList([self class], &iter)) {
+    while ((mlist = class_nextMethodList([self class], &iter))) {
         int i;
         for (i=0; i<mlist->method_count; i++) {
             struct objc_method *m = mlist->method_list + i;
