@@ -16,11 +16,13 @@
 
 - (BOOL)isMegaZoomable;
 
+- (BOOL)isAfloat;
 - (BOOL)isBig;
 - (BOOL)isGettingBig;
 
 - (void)returnToOriginal;
 
+- (void)toggleAfloat;
 - (void)toggleMegaZoomFull;
 - (void)toggleMegaZoomVertical;
 - (void)toggleMegaZoomLeftHalf;

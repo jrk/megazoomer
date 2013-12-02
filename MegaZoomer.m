@@ -81,6 +81,13 @@
     [item setKeyEquivalent:@"\n"];
     [item setKeyEquivalentModifierMask:NSCommandKeyMask|NSShiftKeyMask];
     [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
+    
+    item = [[[NSMenuItem alloc] init] autorelease];
+    [item setRepresentedObject:self]; // So I can validate it without having to check the title.
+    [item setTitle:@"Mega Zoom: Toggle Afloat"];
+    [item setAction:@selector(toggleAfloat:)];
+    [item setTarget:self];
+    [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
 }
 
 + (BOOL)megazoomerWorksHere
@@ -127,6 +134,11 @@
 - (void)megaZoomFull:sender
 {
     [[NSApp keyWindow] toggleMegaZoomFull];
+}
+
+- (void)toggleAfloat:sender
+{
+    [[NSApp keyWindow] toggleAfloat];
 }
 
 @end

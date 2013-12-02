@@ -4,6 +4,7 @@
 //
 //  Created by Ian Henderson on 20.09.05.
 //  Copyright 2005 Ian Henderson. All rights reserved.
+//  Extended by Jonathan Ragan-Kelley, 2005-2013.
 //
 
 #import "MegaZoomer.h"
@@ -12,9 +13,13 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 
+// This shit is ugly
 #define NOT_BIG 0
 #define GETTING_BIG 1
 #define TOTALLY_BIG 2
+
+#define NOT_AFLOAT 0
+#define IS_AFLOAT 1
 
 typedef enum {
     MegaZoomNone = NOT_BIG,
@@ -27,6 +32,7 @@ typedef enum {
     MegaZoomModeMax
 } MegaZoomMode;
 
+static NSMutableDictionary *afloatnesses = nil;
 static NSMutableDictionary *bignesses = nil;
 static NSMutableDictionary *modes = nil;
 static NSMutableDictionary *originalFrames = nil;
@@ -113,6 +119,14 @@ static NSMutableDictionary *originalBackgroundMovabilities = nil;
 	[bignesses setObject:[NSNumber numberWithInt:big] forKey:[NSNumber numberWithInt:[self windowNumber]]];
 }
 
+- (void)setAfloat:(int)afloat
+{
+	if (!afloatnesses) {
+		afloatnesses = [[NSMutableDictionary alloc] init];
+	}
+	[afloatnesses setObject:[NSNumber numberWithInt:afloat] forKey:[NSNumber numberWithInt:[self windowNumber]]];
+}
+
 - (void)setMode:(MegaZoomMode)mode
 {
 	if (!modes) {
@@ -124,6 +138,7 @@ static NSMutableDictionary *originalBackgroundMovabilities = nil;
 - (void)returnToOriginal
 {
 	NSRect originalFrame = [[originalFrames objectForKey:[NSNumber numberWithInt:[self windowNumber]]] rectValue];
+    [self setAfloat:NOT_AFLOAT];
     [self setBig:NOT_BIG];
     [self setMode:MegaZoomNone];
     [self setShowsResizeIndicator:YES];
@@ -186,6 +201,7 @@ NOT_WHEN_BIG(isZoomable)
 
 - (void)megaZoom:(MegaZoomMode)mode
 {
+    NSLog(@"jrk was here!");
     if (![self isMegaZoomable]) {
         return;
     }
@@ -238,6 +254,23 @@ NOT_WHEN_BIG(isZoomable)
     } else {
         [self megaZoom:mode];
     }
+}
+
+- (void)toggleAfloat
+{
+    if ([self isAfloat]) {
+        [self setAfloat:NOT_AFLOAT];
+		[self setLevel:NSNormalWindowLevel];
+    } else {
+        [self setAfloat:IS_AFLOAT];
+		[self setLevel:NSFloatingWindowLevel];
+    }
+}
+
+
+- (BOOL)isAfloat
+{
+	return [[afloatnesses objectForKey:[NSNumber numberWithInt:[self windowNumber]]] intValue] == IS_AFLOAT;
 }
 
 - (BOOL)isBig
