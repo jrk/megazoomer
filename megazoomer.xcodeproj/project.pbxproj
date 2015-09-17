@@ -146,7 +146,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = BFED0C7D08E0DB1E0038121C /* Build configuration list for PBXProject "megazoomer" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -217,8 +217,9 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Application Support/SIMBL/Bundles";
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.ianhenderson.megazoomer;
 				PRODUCT_NAME = megazoomer;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = YES;
 			};
@@ -240,8 +241,9 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Application Support/SIMBL/Bundles";
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.ianhenderson.megazoomer;
 				PRODUCT_NAME = megazoomer;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = NO;
 			};
@@ -261,8 +263,9 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Application Support/SIMBL/Bundles";
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.ianhenderson.megazoomer;
 				PRODUCT_NAME = megazoomer;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Default;
@@ -270,9 +273,10 @@
 		BFED0C7E08E0DB1E0038121C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_TESTABILITY = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -281,7 +285,7 @@
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -290,7 +294,7 @@
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Default;
 		};

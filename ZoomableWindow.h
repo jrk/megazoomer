@@ -22,6 +22,7 @@
 
 - (void)returnToOriginal;
 
+- (void)toggleHideMenu;
 - (void)toggleAfloat;
 - (void)toggleMegaZoomFull;
 - (void)toggleMegaZoomVertical;

@@ -24,6 +24,7 @@
 typedef enum {
     MegaZoomNone = NOT_BIG,
     
+    MegaZoomHideMenu,
     MegaZoomFullScreen,
     MegaZoomVertical,
     MegaZoomLeftHalf,
@@ -224,6 +225,11 @@ NOT_WHEN_BIG(isZoomable)
     [self setFrame:[self megaZoomedFrame:mode] display:YES animate:YES];
     [self setMovableByWindowBackground:NO];
     [self setBig:TOTALLY_BIG];
+}
+
+- (void)toggleMegaZoomHideMenu
+{
+    [self toggleMegaZoom:MegaZoomHideMenu];
 }
 
 - (void)toggleMegaZoomFull

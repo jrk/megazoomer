@@ -61,6 +61,13 @@
     
     item = [[[NSMenuItem alloc] init] autorelease];
     [item setRepresentedObject:self]; // So I can validate it without having to check the title.
+    [item setTitle:@"Toggle Menu"];
+    [item setAction:@selector(toggleHideMenu:)];
+    [item setTarget:self];
+    [windowMenu insertItem:item atIndex:[windowMenu indexOfItemWithTarget:nil andAction:@selector(performZoom:)]+1];
+
+    item = [[[NSMenuItem alloc] init] autorelease];
+    [item setRepresentedObject:self]; // So I can validate it without having to check the title.
     [item setTitle:@"Mega Zoom: Right Half"];
     [item setAction:@selector(megaZoomRightHalf:)];
     [item setTarget:self];
@@ -115,6 +122,12 @@
 {
     return [[NSApp keyWindow] isMegaZoomable];
 }
+
+- (void)toggleHideMenu:sender
+{
+    [[NSApp keyWindow] toggleHideMenu];
+}
+
 
 - (void)megaZoomLeftHalf:sender
 {
